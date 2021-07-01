@@ -42,8 +42,59 @@ const getFoods = async(req, res) => {
         }) 
     }
 }
-
+//find a book by type
+const getFoodByType = async (req, res) => {
+    console.log(req)
+    
+    try {
+        const food = await Food.find({type : req.params.type })
+        if(!food) {
+            res.status(404).json({
+                message: "Book not found ",
+                data: {}
+            })
+        }
+        res.status(200).json({
+            message: "Book found successfully",
+            data: food
+        })
+    } catch(err){
+        console.log(`Error is: ${err}`)
+        //send error response to client
+        res.status(500).json({
+            message: "Intrenal server error",
+            data: {}
+        }) 
+    }
+}
+//find a book by title
+const getFoodByTitle = async (req, res) => {
+    console.log(req)
+    
+    try {
+        const food = await Food.find({title : req.params.title })
+        if(!food) {
+            res.status(404).json({
+                message: "Book not found ",
+                data: {}
+            })
+        }
+        res.status(200).json({
+            message: "Food found successfully",
+            data: food
+        })
+    } catch(err){
+        console.log(`Error is: ${err}`)
+        //send error response to client
+        res.status(500).json({
+            message: "Intrenal server error",
+            data: {}
+        }) 
+    }
+}
 module.exports = {
     addFoods ,
-    getFoods
+    getFoods ,
+    getFoodByType,
+    getFoodByTitle
 }

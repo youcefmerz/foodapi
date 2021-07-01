@@ -2,6 +2,7 @@ const mongoose = require ('mongoose')
 const validator = require('validator')
 const bcrypt = require('bcryptjs')
 const jwt = require('jsonwebtoken')
+require("dotenv").config()
 const userSchema = new mongoose.Schema({
     name : {
         type : String,
@@ -31,37 +32,37 @@ const userSchema = new mongoose.Schema({
             }
         } 
     },
-    age : {
+    numtel : {
         type : Number,
-        default : 0,
-        validate(value){
-            if (value < 0){
-                throw new Error('Age must be a positive number')
-            }
-        } 
+        //required : true,
+        trim: true
     },
-    tokens : [{
-        token : {
-            type :String,
-            required : true
-        }
+    cart: [{
+        type: mongoose.Types.ObjectId,
+        ref: 'Food',
     }]
-},{
-    timestamps: true  // create at, updated at
-})
-// Hash the plain text password before saving
-userSchema.pre('save', async function (next){
-    const user = this   // refer to userSchema
-    user.password = await bcrypt.hash(user.password, 8)
-    next()
-})
-//Generate Auth token
-userSchema.methods.generateAuthToken = async function (){
-    const user = this  // refer to userSchema
-    const token = jwt.sign({_id: user._id.toString()},process.env.JWT_SECRET)
-    user.tokens = user.tokens.concat({token})
-    await user.save()
-    return token
+    },
+    {
+        timestamps: true  // create at, updated at
+    })
+/*userSchema.pre('save', async function (next) {
+    const salt = await bcrypt.genSalt(10);
+    const hashed = await bcrypt.hash(this.password, salt);
+
+    this.password = hashed;
+
+    next();
+});
+
+
+userSchema.methods.genAuthToken = function () {
+    return jwt.sign(this.toJSON(),  process.env.JWT_SECRET);
+};
+
+userSchema.methods.checkPassword = function(password) {
+    return bcrypt.compare(password, this.password)
 }
+*/
+
 const User = mongoose.model("User", userSchema)
 module.exports = User
